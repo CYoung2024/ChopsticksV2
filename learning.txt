@@ -3,3 +3,7 @@ for logging my thoughts
 21FEB2023
 pygame will probably make this easier
 need to game plan on drawing board
+
+22FEB2023
+laid out basic ideas for gui
+will focus on gui functions and game logic before bot logic
