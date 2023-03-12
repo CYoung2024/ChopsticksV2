@@ -46,6 +46,26 @@ class DropDown():
         return -1
 
 
+# what happens when one team hits other team
+# only returns defender value
+def doAttackLogic(attackerVal, defenderVal, gamemode):
+    total = attackerVal + defenderVal
+    if total < 5:
+        defenderVal = total
+    elif gamemode == 'Rollover' and total >= 5:
+        defenderVal = total - 5
+    elif gamemode == 'Cutoff' and total >= 5:
+        defenderVal = 0
+    return defenderVal
+
+
+# what happends when one team hits a teammate
+def doTransferLogic(donatorVal, receiverVal):
+    pass
+
+
+
+
 def main():
     ### Initialize pygame
     pg.init()
@@ -59,11 +79,25 @@ def main():
 
 
     ### Initialize GUI elements and other things
-    playerRight5 = pg.image.load("images/playerRight5.jpg").convert()
+    playerRight = []
+    playerRight.append(pg.image.load("images/playerRight0.jpg").convert())
+    playerRight.append(pg.image.load("images/playerRight1.jpg").convert())
+    playerRight.append(pg.image.load("images/playerRight2.jpg").convert())
+    playerRight.append(pg.image.load("images/playerRight3.jpg").convert())
+    playerRight.append(pg.image.load("images/playerRight4.jpg").convert())
+    playerRight.append(pg.image.load("images/playerRight5.jpg").convert())
+    playerLeft = []; botRight = []; botLeft = []
+    for img in playerRight:
+        playerLeft.append(pg.transform.flip(img, True, False))
+        botRight.append(pg.transform.flip(img, True, True))
+        botLeft.append(pg.transform.flip(img, False, True))
+    
     logo = pg.image.load("images/logo2.jpg").convert()
+
     medFont = pg.font.SysFont('Corbel',30)
     bigFont = pg.font.SysFont('Corbel',50)
     hugeFont = pg.font.SysFont('Corbel',60)
+
     welcomeStartButtonText = bigFont.render('Start Game' , True , (0,0,0))
     welcomeLabel = hugeFont.render('Chopsticks' , True , (0,0,0))
     optionsLabel = bigFont.render('Options', True, (0,0,0))
@@ -73,22 +107,22 @@ def main():
     50, 300, 250, 50, medFont, "Select Who Starts", ["Player", "Computer"])
     optionsPlayButtonText = bigFont.render('Play' , True , (0,0,0))
 
-
-
-    ### Game loop
     running = True
     screenState = "welcome"
-    turn = ""
-    gamemode = ""
-    playerVal1 = 1
-    playerVal2 = 1
-    botVal1 = 1
-    botVal1 = 1
+    turn = ""; gamemode = ""
+    playerVal1 = 1; playerVal2 = 1
+    botVal1 = 1; botVal2 = 1
+    playerLeftAlive = True; playerRightAlive = True
+    botRightAlive = True; botLeftAlive = True
+
+    ### Game loop
     while running:
         ### Handle user input and update states
         # screenState = welcome -> intro screen
         # screenState = options -> new game / load game screen
         # screenState = playing -> playing the game
+        # screenState = paused -> inside pause menu
+        # screenState = finished -> win / lose / restart
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 pg.quit()
@@ -110,15 +144,9 @@ def main():
                         screenState = "playing"
                         turn = whoStartsList.main
                         gamemode = gamemodeList.main
-
-                  
-
-
-
-        ### Update states and logic ???? maybe dont do it here
-        # screenState = welcome -> intro screen
-        # screenState = options -> new game / load game screen
-        
+            ## On gameplay screen, player's turn
+            if screenState == "playing" and turn == 'Player':
+                pass
 
 
         ### Update Graphics
@@ -144,10 +172,17 @@ def main():
 
         if screenState == "playing":
             pg.Surface.fill(screen, (255,255,255))
+            pg.draw.rect(screen, (0,0,0), (158,100,104,98), width=3)
+            pg.draw.rect(screen, (0,0,0), (158,300,104,98), width=3)
+            pg.draw.rect(screen, (0,0,0), (378,100,104,98), width=3)
+            pg.draw.rect(screen, (0,0,0), (378,300,104,98), width=3)
+            screen.blit(playerLeft[playerVal1], playerLeft[playerVal1].get_rect(center = (158+104/2, 300+98/2)))
+            screen.blit(playerRight[playerVal2], playerRight[playerVal2].get_rect(center = (378+104/2, 300+98/2)))
+            screen.blit(botRight[botVal1], botRight[botVal1].get_rect(center = (158+104/2, 100+98/2)))
+            screen.blit(botLeft[botVal2], botLeft[botVal2].get_rect(center = (378+104/2, 100+98/2)))
+        if screenState == "playing" and turn == "Player":
+            pass
 
-            
-
-        #pg.Surface.blit(screen, playerRight5, (100,100))
 
         pg.display.flip()
         clock.tick(60)
